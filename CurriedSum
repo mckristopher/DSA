@@ -1,0 +1,35 @@
+function sum(...nums) {
+  let total = nums.reduce((sum, n) => sum + n, 0);
+  
+  function inner(...next) {
+    if (next.length === 0) return total;
+    total += next.reduce((sum, n) => sum + n, total)
+    return inner;
+  }
+  
+  inner.valueOf = () => total;
+  inner.toString = () => String(total);
+  inner[Symbol.toPrimitive] = () => total;
+  return inner;
+}
+
+sum(4, 6, 8, 10)();
+console.log(+sum(4, 6, 8, 10)); //output - 28
+console.log(sum(4)(6)(8)(10)()); //output - 28
+
+// !important
+// console.log(sum(4)(6)(8)(10)); --
+// this is not possible, since there is no way to process the function to a value.
+// we either need to convert using +
+// or add a condition to handle and empty function call
+
+function curriedsum(n) {
+  let total = n
+  return function inner(m) {
+    if (m === undefined) return total;
+    total += m;
+    return inner;
+  }
+}
+
+console.log(curriedsum(4)(6)(8)(10)(12)()); //output - 28
